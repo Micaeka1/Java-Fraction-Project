@@ -3,13 +3,25 @@ public class FractionImpl implements Fraction {
 
     private int num;
     private int denom;
+
+    /**
+     * Parameters are the <em>numerator</em> and the <em>denominator</em>.
+     * Normalize the fraction as you create it.
+     * For instance, if the parameters are <pre>(8, -12)</pre>, create a <pre>Fraction</pre> with numerator
+     * <pre>-2</pre> and denominator <pre>3</pre>.
+     *
+     * The constructor should throw an <pre>ArithmeticException</pre> if the denominator is zero.
+     *
+     * @param numerator
+     * @param denominator
+     */
     public FractionImpl(int numerator, int denominator) {
         if(denominator == 0){
             throw new ArithmeticException("Divided by zero.");
         }
-        int gcd = getGCD(numerator,denominator);
         int numAbs = Math.abs(numerator);
         int demAbs = Math.abs(denominator);
+        int gcd = getGCD(numAbs,demAbs);
         if ((numerator < 0 && denominator >0) || (numerator > 0 && denominator <0)){
             this.num = (numAbs/gcd)*-1;
             this.denom =demAbs/gcd;
@@ -28,32 +40,35 @@ public class FractionImpl implements Fraction {
         }
     }
 
+    /**
+     * The parameter is the numerator and <pre>1</pre> is the implicit denominator.
+     *
+     * @param wholeNumber representing the numerator
+     */
     public FractionImpl(int wholeNumber) {
         this(wholeNumber,1);
     }
 
+    /**
+     * The parameter is a <pre>String</pre> containing either a whole number, such as `5` or `-3`, or a fraction,
+     * such as "8/-12".
+     * Allow blanks around (but not within) integers.
+     * The constructor should throw an <pre>ArithmeticException</pre>
+     * if given a string representing a fraction whose denominator is zero.
+     * <p>
+     * You may find it helpful to look at the available String API methods in the Java API.
+     *
+     * @param fraction the string representation of the fraction
+     */
     public FractionImpl(String fraction) {
-        int l = fraction.length();
-        int i = 0;
-        String num1 = "";
-        String num2 = "";
-        while(fraction.charAt(i) != '/'){
-            num1 = num1 + Character.toString(fraction.charAt(i));
-            i++;
-        }
-        i++;
-        while (i < l){
-            num2  = num2 + Character.toString(fraction.charAt(i));
-            i++;
-        }
-        int numerator = Integer.parseInt(num1.strip());
-        int denominator = Integer.parseInt(num2.strip());
+        int numerator = stringToNumerator(fraction);
+        int denominator = stringToDenominator(fraction);
         if(denominator == 0){
             throw new ArithmeticException("Divided by zero.");
         }
-        int gcd = getGCD(numerator,denominator);
         int numAbs = Math.abs(numerator);
         int demAbs = Math.abs(denominator);
+        int gcd = getGCD(numAbs,demAbs);
         if ((numerator < 0 && denominator >0) || (numerator > 0 && denominator <0)){
             this.num = (numAbs/gcd)*-1;
             this.denom =demAbs/gcd;
@@ -72,19 +87,68 @@ public class FractionImpl implements Fraction {
         }
     }
 
-
-    private int getGCD(int numerator, int denominator) {
+    //Method to find the GCD between two positive integers
+     private int getGCD(int numerator, int denominator) {
         int gcd = 1;
         int numAbs = Math.abs(numerator);
         int demAbs = Math.abs(denominator);
-        for (int i = 1; i <numAbs && i <= demAbs ; i++) {
+        for (int i = 1; i <=numAbs && i <= demAbs ; i++) {
             if (numAbs%i == 0 & demAbs%i == 0)
                 gcd = i;
         }
         return gcd;
     }
 
+    private  int getNum(Fraction f) {
+        String stringFraction = f.toString();
+        return stringToNumerator(stringFraction);
+    }
+    /* Method to extract the numerator from the fraction in string format, and return it as
+        an integer. If the input is a whole number (i.e no "/" present), the
+        method returns the whole number as an integer.
+     */
+    private int stringToNumerator(String fraction){
+        String num1 = "";
+        if(fraction.contains("/")){
+            int i = 0;
+            while(fraction.charAt(i) != '/'){
+                num1 = num1 + fraction.charAt(i);
+                i++;
+            }
+        }
+        else{num1 = fraction;}
+        return Integer.parseInt(num1.strip());
+    }
+    /* Method to extract the denominator from the fraction in sting format, and return it as
+        an integer. If the input is a whole number (i.e no "/" present), the
+        method returns the integer 1
+     */
+    private int stringToDenominator(String fraction){
+        String num1 = "";
+        if(fraction.contains("/")){
+            int l = fraction.length();
+            int i = 0;
+            // Increment i until the "/" is reached in the string
+            while(fraction.charAt(i) != '/'){ i++; }
+            // Increment i by 1 to start extracting the characters immediately after the "/"
+            i++;
+            while (i < l){
+                num1  = num1 + fraction.charAt(i);
+                i++;
+            }
+        }
+        else{num1 = "1";}
+        return Integer.parseInt(num1.strip());
+    }
 
+    private int getDenom(Fraction f) {
+        String stringFraction = f.toString();
+        return stringToDenominator(stringFraction);
+    }
+
+    /**
+     * @inheritDoc
+     */
     @Override
     public Fraction add(Fraction f) {
         int a = num;
@@ -94,24 +158,20 @@ public class FractionImpl implements Fraction {
         //(ad + bc)/bd
         int numerator = a*d + b*c;
         int denominator = b*d;
-        Fraction result = new FractionImpl(numerator,denominator);
-        return result;
+        return new FractionImpl(numerator,denominator);
     }
-
-    private  int getNum(Fraction f) {
-        return this.num;
-    }
-
-    private int getDenom(Fraction f) {
-        return denom;
-    }
-
     /**
      * @inheritDoc
      */
     @Override
     public Fraction subtract(Fraction f) {
-        return null;
+        int a = num;
+        int b = denom;
+        int c = getNum(f);
+        int d = getDenom(f);
+        int numerator = a*d - b*c;
+        int denominator = b*d;
+        return new FractionImpl(numerator,denominator);
     }
 
     /**
@@ -119,7 +179,13 @@ public class FractionImpl implements Fraction {
      */
     @Override
     public Fraction multiply(Fraction f) {
-        return null;
+        int a = num;
+        int b = denom;
+        int c = getNum(f);
+        int d = getDenom(f);
+        int numerator = a*c;
+        int denominator = b*d;
+        return new FractionImpl(numerator,denominator);
     }
 
     /**
@@ -127,7 +193,13 @@ public class FractionImpl implements Fraction {
      */
     @Override
     public Fraction divide(Fraction f) {
-        return null;
+        int a = num;
+        int b = denom;
+        int c = getNum(f);
+        int d = getDenom(f);
+        int numerator = a*d;
+        int denominator = b*c;
+        return new FractionImpl(numerator,denominator);
     }
 
     /**
@@ -135,7 +207,16 @@ public class FractionImpl implements Fraction {
      */
     @Override
     public Fraction abs() {
-        return null;
+        int numerator,denominator;
+        if(num <0 || denom <0){
+            numerator = Math.abs(num);
+            denominator = Math.abs(denom);
+        }
+        else{
+            numerator = num;
+            denominator = denom;
+        }
+        return new FractionImpl(numerator,denominator);
     }
 
     /**
@@ -143,7 +224,7 @@ public class FractionImpl implements Fraction {
      */
     @Override
     public Fraction negate() {
-        return null;
+        return new FractionImpl(num*-1, denom);
     }
 
     /**
@@ -159,7 +240,11 @@ public class FractionImpl implements Fraction {
      */
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        if (obj instanceof Fraction){
+            Fraction f = (Fraction) obj;
+            return getNum(f) == num && getDenom(f) == denom;
+        }
+        else{return false;}
     }
 
     /**
@@ -175,15 +260,19 @@ public class FractionImpl implements Fraction {
      */
     @Override
     public Fraction inverse() {
-        return null;
+        int numerator = denom, denominator = num;
+        return new FractionImpl(numerator,denominator);
     }
 
     /**
      * @inheritDoc
+     * @return
      */
     @Override
     public int compareTo(Fraction o) {
-        return 0;
+        float f1 = (float) num/denom;
+        float f2 = (float) getNum(o)/getDenom(o);
+        return Float.compare(f1,f2);
     }
 
     /**
@@ -191,7 +280,9 @@ public class FractionImpl implements Fraction {
      */
     @Override
     public String toString() {
-        return String.format("%s/%s",num,denom);
+        if(denom == 1){ return String.format("%s",num); }
+        else{return String.format("%s/%s",num,denom); }
     }
+
 
 }
