@@ -56,3 +56,55 @@ You may find it helpful to look at the available String methods in the Java API.
 
 - The java method `Integer(string).parseInt()` will return the `int` equivalent of the string (assuming that the string represents a legal integer). Malformed input will cause it to throw a `NumberFormatException`.
 
+## Methods
+The following lists the non-constructor methods that should be implemented.
+In what follows, `this` is sometimes denoted by `a/b`, and an argument `f` is sometimes denoted by `c/d`.
+
+| Method signature| What it does|
+| ---|---|
+|`public Fraction add(Fraction f)`| Returns a new `Fraction` that is the **sum** of `this` and `f`: <br /> `a/b + c/d` is `(ad + bc)/bd`|
+|`public Fraction subtract(Fraction f)` | Returns a new `Fraction` that is the **difference** of `this` minus `f`: <br /> `a/b - c/d` is `(ad - bc)/bd`
+|`public Fraction multiply(Fraction f)` | Returns a new `Fraction` that is the **product** of `this` and `f`: <br /> `(a/b) * (c/d)` is `(a*c)/(b*d)`
+|`public Fraction divide(Fraction f)`	| Returns a new `Fraction` that is the **quotient** of dividing `this` by `f`: <br /> `(a/b) / (c/d)` is `(a*d)/(b*c)`
+|`public Fraction abs()` |	Returns a new `Fraction` that is the **absolute** value of `this` fraction.
+|`public Fraction negate()` |	Returns a new `Fraction` that has the same numeric value of `this` fraction, but the opposite sign.
+|`public Fraction inverse()`| 	The inverse of `a/b` is `b/a`.
+|`@Override` <br /> `public boolean equals(Object o)` | Returns true if `o` is a `Fraction` equal to `this`, and false in all other cases.
+|`@Override` <br /> `public int compareTo(Fraction o)` | This method returns: <br /> - A negative `int` if `this` is less than `o`.  <br /> - Zero if `this` is equal to `o`.  <br /> - A positive `int` if `this` is greater than `o`.
+|`@Override` <br /> `public String toString()` | Returns a `String` of the form `n/d`, where `n` is the numerator and `d` is the denominator. However, if `d` is 1, just return `n` (as a `String`). The returned `String` should not contain any blanks. If the fraction represents a negative number, a minus sign should precede `n`. <br /> This should be one of the first methods you write, because it will help you in debugging. Note that, for the purposes of this assignment, there is no need to implement the related `clone()` and `hashCode()` methods.|
+
+### Notes:
+- All `Fractions` should be immutable, that is, there should be no way to change their components after the numbers have been created. Many of the requested methods simply return a new fraction.
+
+- When you define `equals`, notice that it requires an `Object` as a parameter. This means that the first thing the method should do is make sure that its parameter is in fact a `Fraction`, and return `false` if it is not. 
+
+  - You can test with `o instanceof Fraction`.
+  
+  - You can use `o` as a `Fraction` by saying `((Fraction) o)`, or you can save it in a `Fraction` variable by saying `Fraction f = (Fraction) o;` and then using `f`.
+ 
+- You can create additional "helper" methods (for example, to compute the GCD, or to normalise a fraction), if you wish; indeed, we recommend doing so. If you do, do not make these methods public, but do test them.
+
+- To put a fraction into its lowest terms, divide both the numerator and the denominator by their Greatest Common Divisor (GCD); Euclid's algorithm finds the GCD of two positive integers. Briefly, it works as follows (please refer to the web for more information if needed):
+
+  - As long as the two numbers are both nonzero, replace the larger number with the remainder of dividing the larger by the smaller (this can be done via code having the form `larger = larger % smaller)`.
+  -  As soon as one of the numbers is equal to zero, the other number is the GCD.
+
+## Unit testing
+You must include a JUnit file with unit tests; these should test each of the methods that you implement in the `FractionImpl` class. This includes ensuring that the correct exceptions are thrown, when appropriate.
+
+## Comments
+All methods in your `FractionImpl` class should have comments.
+
+Where you implement a method from the interface given in Fraction.java (that is, where there is an @Override annotation in the implementation) you do not need to duplicate the method comments from the interface. If you choose to use Javadoc (which is optional), the @inheritDoc annotation in the comment block will ensure that the method comments are inherited from the interface. You may want to amend or add additional information in your method headers in FractionImpl.java, for example, information that is specific to your implementation.
+
+Any additional methods  (such as helper methods) in your implementation should be fully documented with a comment header which describes what the method achieves, the parameters (if any), the return value (if any), and which exceptions the method may throw and under what circumstances. (You may use Javadoc format if you wish, but again, this is not required.)
+
+Inside methods, you should provide comments. In general, these should be high-level comments to aid the reading of your code by someone who is already familiar with Java.
+
+## Grading
+Your grade will be based on:
+
+- How correct and complete your class is.
+- Your comments and general programming style.
+
+We will use our own programs and our own unit tests for grading purposes. Therefore, you must adhere to the method names and parameter types shown.
